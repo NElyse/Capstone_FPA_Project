@@ -2,7 +2,7 @@
 import React from 'react';
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
-import Dashboard from './components/Dashboard';
+import FloodData  from './components/FloodData';
 
 
 function App() {
@@ -11,7 +11,7 @@ function App() {
       <Sidebar />
       <div className="flex-1 overflow-y-auto">
         <Navbar />
-        <Dashboard />
+        <FloodData  />
       </div>
     </div>
   );

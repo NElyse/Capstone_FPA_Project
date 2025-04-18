@@ -8,7 +8,7 @@ const FloodStatus = () => {
   useEffect(() => {
     axios.get('http://localhost:3000/api/flood/latest')
       .then(res => setStatus(res.data))
-      .catch(err => console.error(err));
+      .catch(err => console.error('Error fetching flood status:', err));
   }, []);
 
   return (
@@ -16,9 +16,9 @@ const FloodStatus = () => {
       <h2 className="text-xl font-bold mb-2">Current Flood Risk</h2>
       {status ? (
         <div>
-          <p><strong>Risk Level:</strong> {status.risk_level}</p>
-          <p><strong>Location:</strong> {status.location}</p>
-          <p><strong>Timestamp:</strong> {new Date(status.timestamp).toLocaleString()}</p>
+          <p><strong>Risk Level:</strong> {status.risk_level || 'Data not available'}</p>
+          <p><strong>Location:</strong> {status.location || 'Data not available'}</p>
+          <p><strong>Timestamp:</strong> {status.timestamp ? new Date(status.timestamp).toLocaleString() : 'Data not available'}</p>
         </div>
       ) : (
         <p>Loading data...</p>
