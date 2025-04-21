@@ -45,19 +45,21 @@ app.get('/api/flooddata', (req, res) => {
 
 app.get('/api/floodstatus', (req, res) => {
   const query = 'SELECT id, risk_level, location, timestamp FROM flood_status ORDER BY timestamp DESC';
+  
   db.query(query, (err, result) => {
     if (err) {
-      console.error('Error fetching latest flood status:', err);
-      return res.status(500).send('Error fetching data');
+      console.error('Error fetching flood status data:', err);
+      return res.status(500).json({ error: 'Error fetching data' });
     }
 
     if (!result || result.length === 0) {
-      return res.status(404).send('No flood status found');
+      return res.status(404).json({ message: 'No flood status records found' });
     }
 
-    res.json(result[0]);
+    res.status(200).json(result);
   });
 });
+
 
 
 // Start Server
