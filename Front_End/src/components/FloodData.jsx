@@ -32,9 +32,7 @@ const FloodData = () => {
 
   return (
     <div className="flood-data-container p-6">
-      <h2 className="text-2xl font-bold text-center mb-6">Flood Prediction and Alert System</h2>
-      
-      <div className="cards-container grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="cards-container grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {floodData.map((data) => (
           <React.Fragment key={data.id}>
             <DataCard

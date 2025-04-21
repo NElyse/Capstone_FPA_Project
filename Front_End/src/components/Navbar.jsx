@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 const Navbar = () => {
   return (
     <nav className="bg-blue-800 text-white p-4 shadow-md flex justify-between items-center">
-      <h1 className="text-xl font-semibold">Flood Alert Dashboard</h1>
+      <h1 className="text-xl font-semibold">Flood Prediction and Alert System</h1>
       <div className="space-x-4">
       <ul className="flex space-x-4">
         <li>
