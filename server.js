@@ -44,8 +44,7 @@ app.get('/api/flooddata', (req, res) => {
 });
 
 app.get('/api/floodstatus', (req, res) => {
-  const query = 'SELECT id, risk_level, location, timestamp FROM flood_status ORDER BY timestamp DESC LIMIT 1';
-
+  const query = 'SELECT id, risk_level, location, timestamp FROM flood_status ORDER BY timestamp DESC';
   db.query(query, (err, result) => {
     if (err) {
       console.error('Error fetching latest flood status:', err);
