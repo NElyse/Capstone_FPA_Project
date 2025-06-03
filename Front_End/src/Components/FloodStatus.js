@@ -6,7 +6,7 @@ const FloodStatus = () => {
   const [statusData, setStatusData] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:3000/api/floodstatus')
+    axios.get('http://localhost:5000/api/floodstatus')
       .then(res => {
         setStatusData(res.data);
       })

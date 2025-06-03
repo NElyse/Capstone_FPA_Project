@@ -1,0 +1,96 @@
+/* Form container */
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  width: 100%;
+}
+
+/* Labels */
+.form-label {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+/* Inputs & Selects */
+.form-input,
+.form-select {
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+}
+
+/* Button - Base style */
+.form-button {
+  padding: 6px 16px;
+  font-size: 14px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+/* Button - Hover effect */
+.form-button:hover {
+  background-color: #0056b3;
+}
+
+/* Button - Green (e.g., register) */
+.form-button.green {
+  background-color: #28a745;
+}
+
+.form-button.green:hover {
+  background-color: #218838;
+}
+
+/* Title in forms */
+.form-title {
+  margin-bottom: 10px;
+  color: #333;
+}
+
+/* Forgot password or register switch link */
+.form-switch-text,
+.switch-auth {
+  margin-top: 10px;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* Clickable link in modal or form */
+.form-link {
+  background: none;
+  border: none;
+  color: #007bff;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+}
+
+/* Modal close button */
+.modal-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  padding: 0;
+  line-height: 1;
+}
+
+.modal-close-btn:hover {
+  color: #007bff;
+}

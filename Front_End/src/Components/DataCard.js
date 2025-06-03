@@ -1,4 +1,4 @@
-// src/components/DataCard.jsx
+// src/components/DataCard.js
 import React from 'react';
 
 const DataCard = ({ title, value, unit, color }) => {

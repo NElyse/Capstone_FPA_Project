@@ -2,13 +2,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import DataCard from './DataCard'; // Import DataCard component
-import './FloodData.css';
+import './CSS/FloodData.css';
 
 const FloodData = () => {
   const [floodData, setFloodData] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:3000/api/flooddata')
+    axios.get('http://localhost:5000/api/flooddata')
       .then(response => {
         setFloodData(response.data);
       })

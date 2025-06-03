@@ -1,0 +1,114 @@
+/* Full-screen layout */
+.home-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Background Image Slideshow */
+.bg-slider {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.bg-slide {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+
+.bg-slide.active {
+  opacity: 1; /* visible */
+  z-index: 1;
+}
+
+.bg-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 2;
+}
+
+/* Centered hero content */
+.hero-content {
+  position: relative;
+  z-index: 3;
+  height: 100vh;
+  display: flex;
+  align-items: center;      /* vertical center */
+  justify-content: center;  /* horizontal center */
+  padding: 2rem;
+  text-align: center;
+  user-select: none;
+}
+
+/* Glass effect card with low opacity */
+.content-card {
+  background: rgba(132, 60, 225, 0.15); /* translucent purple */
+  border-radius: 1rem;
+  padding: 2.5rem 3rem;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: white;
+  max-width: 600px;
+  width: 90%;
+  box-shadow: 0 8px 32px rgba(24, 24, 24, 0.3);
+  user-select: none;
+}
+
+/* Text styles */
+.hero-subtitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.hero-title {
+  font-size: 2rem;
+  margin: 1rem 0;
+}
+
+.hero-description {
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.4;
+}
+
+/* Buttons container */
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Forgot password link */
+.forgot-link {
+  font-size: 0.9rem;
+  font-style: italic;
+  color: #ffffff;
+}
+
+/* Link button */
+.form-link {
+  background: none;
+  border: none;
+  color: #829ae9;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+}

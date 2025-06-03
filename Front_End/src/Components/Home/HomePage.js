@@ -1,0 +1,92 @@
+import React, { useState, useEffect } from 'react';
+import Modal from './Modal';
+import Register from './Register';
+import Login from './Login';
+import ForgotPassword from './ForgotPassword';
+import '../CSS/HomePage.css';  // contains styles below
+import '../CSS/Form.css';      // your form styles
+
+const bgImages = [
+  '/images/ikiraro-7.jpg',
+  '/images/img_20201007_144400-625bd.jpg',
+  '/images/map.png',
+  '/images/map2.png'
+];
+
+export default function Home() {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalContent, setModalContent] = useState('');
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex(prevIndex =>
+        prevIndex === bgImages.length - 1 ? 0 : prevIndex + 1
+      );
+    }, 8000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const openModal = contentType => {
+    setModalContent(contentType);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const switchModalContent = contentType => {
+    setModalContent(contentType);
+  };
+
+  return (
+    <div className="home-container">
+      <div className="bg-slider">
+        {bgImages.map((img, index) => (
+          <div
+            key={index}
+            className={`bg-slide ${index === currentImageIndex ? 'active' : ''}`}
+            style={{ backgroundImage: `url(${img})` }}
+          />
+        ))}
+        <div className="bg-overlay"></div>
+      </div>
+
+      <div className="hero-content">
+        <div className="content-card">
+          <h5 className="hero-subtitle">Flood Prediction & Alert System</h5>
+          <h1 className="hero-title">Welcome to FPA Dashboard</h1>
+          <p className="hero-description">
+            Stay informed and prepared with real-time flood data, alerts, and community reports.
+          </p>
+
+          <div className="action-buttons">
+            <button className="form-button" onClick={() => openModal('login')}>
+              Login
+            </button>
+            <button className="form-button green" onClick={() => openModal('register')}>
+              Register
+            </button>
+          </div>
+
+          <div className="forgot-link">
+            <p>
+              Forgot password?{' '}
+              <button className="form-link" onClick={() => openModal('forgot-password')}>
+                Reset it here
+              </button>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <Modal isOpen={isModalOpen} closeModal={closeModal}>
+        {modalContent === 'login' && <Login switchToRegister={() => switchModalContent('register')} />}
+        {modalContent === 'register' && <Register switchToLogin={() => switchModalContent('login')} />}
+        {modalContent === 'forgot-password' && <ForgotPassword />}
+      </Modal>
+    </div>
+  );
+}
