@@ -1,13 +1,15 @@
 require('dotenv').config();
 const express = require('express');
+const path = require('path');            // <-- Added missing import
 const mysql = require('mysql2');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
-const nodemailer = require("nodemailer");
-
+const nodemailer = require('nodemailer');
 
 const app = express();
+
+// Middleware
 app.use(express.json());
 app.use(cors());
 
@@ -32,7 +34,6 @@ app.get('/', (req, res) => {
   res.send('Flood Prediction and Alert System API');
 });
 
-
 // Get Flood Data
 app.get('/api/flooddata', (req, res) => {
   const query = 'SELECT id, water_level, rainfall, flood_risk, recorded_at FROM flood_data ORDER BY id DESC';
@@ -41,7 +42,6 @@ app.get('/api/flooddata', (req, res) => {
     res.json(results);
   });
 });
-
 
 // Get Flood Status
 app.get('/api/floodstatus', (req, res) => {
@@ -52,7 +52,6 @@ app.get('/api/floodstatus', (req, res) => {
     res.status(200).json(results);
   });
 });
-
 
 // Register User
 app.post('/api/register', async (req, res) => {
@@ -69,7 +68,6 @@ app.post('/api/register', async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
-
 
 // Login User
 app.post('/api/login', (req, res) => {
@@ -98,8 +96,7 @@ app.post('/api/login', (req, res) => {
   });
 });
 
-
-// Forgot Password - Generate Reset Token
+// Forgot Password
 app.post('/api/forgot-password', (req, res) => {
   const { email } = req.body;
   if (!email) return res.status(400).json({ error: 'Email is required' });
@@ -108,6 +105,7 @@ app.post('/api/forgot-password', (req, res) => {
     if (err) return res.status(500).json({ error: 'Database error' });
 
     if (!results.length) {
+      // Always respond success to prevent user enumeration
       return res.status(200).json({ message: 'If registered, a reset link has been sent.' });
     }
 
@@ -125,11 +123,6 @@ app.post('/api/forgot-password', (req, res) => {
 
       const resetUrl = `${process.env.CLIENT_URL}/reset-password/${token}`;
 
-      // Send Email
-      const nodemailer = require("nodemailer");
-      require("dotenv").config();
-
-        
       const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
@@ -152,16 +145,13 @@ app.post('/api/forgot-password', (req, res) => {
         `
       };
 
-      transporter.sendMail(mailOptions, (mailErr, info) => {
+      transporter.sendMail(mailOptions, (mailErr) => {
         if (mailErr) return res.status(500).json({ error: 'Failed to send email' });
         res.status(200).json({ message: 'Reset link sent if email is registered.' });
       });
     });
   });
 });
-
-
-
 
 // Validate Reset Token
 app.get('/api/reset-password/:token', (req, res) => {
@@ -178,7 +168,6 @@ app.get('/api/reset-password/:token', (req, res) => {
     res.status(200).json({ userId: record.user_id });
   });
 });
-
 
 // Reset Password
 app.post('/api/reset-password/:token', async (req, res) => {
@@ -199,14 +188,19 @@ app.post('/api/reset-password/:token', async (req, res) => {
       if (updateErr) return res.status(500).json({ error: 'Error updating password' });
 
       db.query('DELETE FROM password_resets WHERE token = ?', [token], () => {
-        // Even if delete fails, we still respond with success
         res.status(200).json({ message: 'Password has been reset successfully.' });
       });
     });
   });
 });
 
+// Serve React static files from build
+app.use(express.static(path.join(__dirname, 'build')));
 
+// React Router will handle all front-end routes (like /reset-password/:token)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
 
 // Start Server
 const PORT = process.env.PORT || 4000;

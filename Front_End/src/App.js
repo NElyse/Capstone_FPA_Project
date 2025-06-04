@@ -10,23 +10,19 @@ import Profile from './Components/users/Profile';
 import Register from './Components/Home/Register';
 import ForgotPassword from './Components/Home/ForgotPassword';
 import AppLayout from './Components/AppLayout';
-import ResetPasswordModal from './Components/Home/ResetPasswordModal';
+import ResetPasswordPage from './Components/Home/ResetPasswordPage';
 
 function App() {
   return (
     <Router>
       <Routes>
-        {/* ✅ Default route is the HomePage */}
         <Route path="/" element={<HomePage />} />
-
-        {/* Public Routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/reset-password" element={<ForgotPassword />} />
-        <Route path="/reset-password/:token" element={<ResetPasswordModal />} /> {/* ✅ New Modal-based Reset Route */}
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
         <Route path="/logout" element={<Logout />} />
 
-        {/* ✅ Protected Routes with Layout */}
         <Route
           path="/flooddata"
           element={
@@ -37,7 +33,6 @@ function App() {
             </PrivateRoute>
           }
         />
-
         <Route
           path="/floodstatus"
           element={
@@ -48,7 +43,6 @@ function App() {
             </PrivateRoute>
           }
         />
-
         <Route
           path="/profile"
           element={
