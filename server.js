@@ -3,10 +3,13 @@ const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
+const nodemailer = require("nodemailer");
+
 
 const app = express();
-app.use(express.json()); // Middleware for JSON requests
-app.use(cors()); // Allow cross-origin requests
+app.use(express.json());
+app.use(cors());
 
 // Database Connection
 const db = mysql.createConnection({
@@ -29,81 +32,57 @@ app.get('/', (req, res) => {
   res.send('Flood Prediction and Alert System API');
 });
 
-// Flood Data API
+
+// Get Flood Data
 app.get('/api/flooddata', (req, res) => {
   const query = 'SELECT id, water_level, rainfall, flood_risk, recorded_at FROM flood_data ORDER BY id DESC';
-
   db.query(query, (err, results) => {
-    if (err) {
-      console.error('Error fetching flood data:', err);
-      res.status(500).send('Error fetching data');
-    } else {
-      res.json(results);
-    }
+    if (err) return res.status(500).send('Error fetching data');
+    res.json(results);
   });
 });
 
-// Flood Status API
+
+// Get Flood Status
 app.get('/api/floodstatus', (req, res) => {
   const query = 'SELECT id, risk_level, location, timestamp FROM flood_status ORDER BY timestamp DESC';
-
   db.query(query, (err, results) => {
-    if (err) {
-      console.error('Error fetching flood status data:', err);
-      return res.status(500).json({ error: 'Error fetching data' });
-    }
-    if (!results || results.length === 0) {
-      return res.status(404).json({ message: 'No flood status records found' });
-    }
+    if (err) return res.status(500).json({ error: 'Error fetching data' });
+    if (!results.length) return res.status(404).json({ message: 'No flood status records found' });
     res.status(200).json(results);
   });
 });
 
-// Register API
+
+// Register User
 app.post('/api/register', async (req, res) => {
   const { fullNames, email, username, phone, password, role } = req.body;
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
-
     const sql = 'INSERT INTO users (full_names, email, username, phone, password_hash, role) VALUES (?, ?, ?, ?, ?, ?)';
-
-    db.query(sql, [fullNames, email, username, phone, hashedPassword, role || 'user'], (err, results) => {
-      if (err) {
-        console.error('Registration error:', err);
-        return res.status(500).json({ error: 'Registration failed' });
-      }
+    db.query(sql, [fullNames, email, username, phone, hashedPassword, role || 'user'], (err) => {
+      if (err) return res.status(500).json({ error: 'Registration failed' });
       res.status(201).json({ message: 'User registered successfully' });
     });
   } catch (err) {
-    console.error('Server error:', err);
     res.status(500).json({ error: 'Server error' });
   }
 });
 
-// Login API
+
+// Login User
 app.post('/api/login', (req, res) => {
   const { identifier, password } = req.body;
-
   const query = 'SELECT * FROM users WHERE username = ? OR email = ? OR phone = ? LIMIT 1';
 
   db.query(query, [identifier, identifier, identifier], async (err, results) => {
-    if (err) {
-      console.error('DB error:', err);
-      return res.status(500).json({ error: 'Server error' });
-    }
-
-    if (results.length === 0) {
-      return res.status(401).json({ error: 'Invalid username/email/phone or password' });
-    }
+    if (err) return res.status(500).json({ error: 'Server error' });
+    if (!results.length) return res.status(401).json({ error: 'Invalid credentials' });
 
     const user = results[0];
-
     const match = await bcrypt.compare(password, user.password_hash);
-
-    if (!match) {
-      return res.status(401).json({ error: 'Invalid username/email/phone or password' });
-    }
+    if (!match) return res.status(401).json({ error: 'Invalid credentials' });
 
     res.json({
       token: 'fake-jwt-token',
@@ -119,127 +98,45 @@ app.post('/api/login', (req, res) => {
   });
 });
 
+
+// Forgot Password - Generate Reset Token
 app.post('/api/forgot-password', (req, res) => {
   const { email } = req.body;
+  if (!email) return res.status(400).json({ error: 'Email is required' });
 
-  const query = 'SELECT * FROM users WHERE email = ?';
+  db.query('SELECT id, full_names FROM users WHERE email = ? LIMIT 1', [email], (err, results) => {
+    if (err) return res.status(500).json({ error: 'Database error' });
 
-  db.query(query, [email], (err, results) => {
-    if (err) {
-      console.error('Database error:', err);
-      return res.status(500).json({ error: 'Server error' });
+    if (!results.length) {
+      return res.status(200).json({ message: 'If registered, a reset link has been sent.' });
     }
 
-    if (results.length === 0) {
-      return res.status(404).json({ error: 'Email not found' });
-    }
-
-    // Normally, you would generate a token and send an email here.
-    // For now, just simulate success:
-    console.log(`Password reset requested for: ${email}`);
-    res.status(200).json({ message: 'Reset link would be sent' });
-  });
-});
-
-
-app.use(express.json())
-// PUT /api/users/:id for Updating
-app.put('/api/users/:id', (req, res) => {
-  const userId = req.params.id;
-  const { full_names, email, username, phone } = req.body;
-
-  const query = `
-    UPDATE users
-    SET full_names = ?, email = ?, username = ?, phone = ?
-    WHERE id = ?
-  `;
-  db.query(query, [full_names, email, username, phone, userId], (err, result) => {
-    if (err) {
-      console.error('Database update error:', err);
-      return res.status(500).json({ error: 'Database update error' });
-    }
-
-    // Return updated user data
-    const selectQuery = `
-      SELECT id, full_names, email, username, phone, role
-      FROM users
-      WHERE id = ?
-    `;
-    db.query(selectQuery, [userId], (err2, results) => {
-      if (err2) {
-        console.error('Error fetching updated user:', err2);
-        return res.status(500).json({ error: 'Error fetching updated user' });
-      }
-      if (results.length === 0) {
-        return res.status(404).json({ error: 'User not found after update' });
-      }
-      res.json({ user: results[0] });
-    });
-  });
-});
-
-
-
-/**
- * POST /api/forgot-password
- *  1) Check if email exists
- *  2) Generate a random token
- *  3) Store token and expiration in password_resets
- *  4) Send email containing a link to reset
- */
-app.post('/api/forgot-password', (req, res) => {
-  const { email } = req.body;
-  if (!email) {
-    return res.status(400).json({ error: 'Email is required' });
-  }
-
-  // 1) Look up user by email
-  const findUserQuery = 'SELECT id, full_names FROM users WHERE email = ? LIMIT 1';
-  db.query(findUserQuery, [email], (err, users) => {
-    if (err) {
-      console.error('DB error when finding user:', err);
-      return res.status(500).json({ error: 'Server error' });
-    }
-    if (users.length === 0) {
-      // It's a good practice not to reveal whether the email exists or not.
-      return res.status(200).json({ message: 'If that email is registered, you will receive a reset link.' });
-    }
-
-    const user = users[0];
-    const userId = user.id;
-
-    // 2) Generate secure random token (e.g., 32 bytes → hex string)
+    const user = results[0];
     const token = crypto.randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 3600 * 1000); // 1 hour
 
-    // 3) Compute expiration (e.g., 1 hour from now)
-    const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour in the future
-
-    // Insert (or replace) into password_resets
-    const insertResetQuery = `INSERT INTO password_resets (user_id, token, expires_at)
+    const insertQuery = `
+      INSERT INTO password_resets (user_id, token, expires_at)
       VALUES (?, ?, ?)
-      ON DUPLICATE KEY UPDATE token = VALUES(token), expires_at = VALUES(expires_at)
+      ON DUPLICATE KEY UPDATE token=VALUES(token), expires_at=VALUES(expires_at)
     `;
-    db.query(insertResetQuery, [userId, token, expiresAt], (err2) => {
-      if (err2) {
-        console.error('DB error when inserting reset token:', err2);
-        return res.status(500).json({ error: 'Server error' });
-      }
+    db.query(insertQuery, [user.id, token, expiresAt], (insertErr) => {
+      if (insertErr) return res.status(500).json({ error: 'Error saving token' });
 
-      // 4) Send email via Nodemailer
-      // Configure your SMTP transporter (for example, using Gmail SMTP)
+      const resetUrl = `${process.env.CLIENT_URL}/reset-password/${token}`;
+
+      // Send Email
+      const nodemailer = require("nodemailer");
+      require("dotenv").config();
+
+        
       const transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST,       // e.g. 'smtp.gmail.com'
-        port: process.env.SMTP_PORT || 587,
-        secure: false,                     // true for 465, false for other ports
+        service: "gmail",
         auth: {
-          user: process.env.SMTP_USER,     // your SMTP username
-          pass: process.env.SMTP_PASS      // your SMTP password or app password
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS,
         },
       });
-
-      // Construct a reset link. 
-      // In a real app, direct them to a client-side route like /reset-password/<token>
-      const resetLink = `${process.env.CLIENT_URL}/reset-password/${token}`;
 
       const mailOptions = {
         from: `"Flood Alert App" <${process.env.SMTP_USER}>`,
@@ -247,97 +144,62 @@ app.post('/api/forgot-password', (req, res) => {
         subject: 'Password Reset Instructions',
         html: `
           <p>Hi ${user.full_names},</p>
-          <p>You requested a password reset. Click the link below to set a new password (valid for 1 hour):</p>
-          <p><a href="${resetLink}">${resetLink}</a></p>
-          <p>If you did not request this, you can ignore this email.</p>
+          <p>You requested a password reset. Click below to set a new password:</p>
+          <p><a href="${resetUrl}">${resetUrl}</a></p>
+          <p>This link will expire in 1 hour.</p>
           <br/>
           <p>– Flood Prediction and Alert System Team</p>
         `
       };
 
       transporter.sendMail(mailOptions, (mailErr, info) => {
-        if (mailErr) {
-          console.error('Error sending reset email:', mailErr);
-          // Even if email fails, don’t reveal sensitive info to the client
-          return res.status(500).json({ error: 'Failed to send reset email' });
-        }
-        console.log('Password reset email sent:', info.response);
-        res.status(200).json({ message: 'If that email is registered, you will receive a reset link.' });
+        if (mailErr) return res.status(500).json({ error: 'Failed to send email' });
+        res.status(200).json({ message: 'Reset link sent if email is registered.' });
       });
     });
   });
 });
 
-/**
- * (Optional) GET /api/reset-password/:token
- *   Verify token is valid and not expired. Return 200 or 400 accordingly.
- */
+
+
+
+// Validate Reset Token
 app.get('/api/reset-password/:token', (req, res) => {
   const { token } = req.params;
-  const query = 'SELECT user_id, expires_at FROM password_resets WHERE token = ? LIMIT 1';
-  db.query(query, [token], (err, rows) => {
-    if (err) {
-      console.error('DB error verifying token:', err);
-      return res.status(500).json({ error: 'Server error' });
-    }
-    if (rows.length === 0) {
-      return res.status(400).json({ error: 'Invalid or expired token.' });
-    }
+  db.query('SELECT user_id, expires_at FROM password_resets WHERE token = ? LIMIT 1', [token], (err, rows) => {
+    if (err) return res.status(500).json({ error: 'Server error' });
+    if (!rows.length) return res.status(400).json({ error: 'Invalid or expired token' });
+
     const record = rows[0];
     if (new Date(record.expires_at) < new Date()) {
-      return res.status(400).json({ error: 'Token has expired.' });
+      return res.status(400).json({ error: 'Token has expired' });
     }
-    // Token is valid—front-end can now show a “Reset Password” form
+
     res.status(200).json({ userId: record.user_id });
   });
 });
 
-/**
- * (Optional) POST /api/reset-password/:token
- *   Accepts a new password and updates the user’s password_hash in DB.
- */
+
+// Reset Password
 app.post('/api/reset-password/:token', async (req, res) => {
   const { token } = req.params;
   const { newPassword } = req.body;
+  if (!newPassword) return res.status(400).json({ error: 'New password is required' });
 
-  if (!newPassword) {
-    return res.status(400).json({ error: 'New password is required.' });
-  }
-
-  // 1) Verify token and get user_id
-  const selectQuery = 'SELECT user_id, expires_at FROM password_resets WHERE token = ? LIMIT 1';
-  db.query(selectQuery, [token], async (err, rows) => {
-    if (err) {
-      console.error('DB error on token lookup:', err);
-      return res.status(500).json({ error: 'Server error' });
-    }
-    if (rows.length === 0) {
-      return res.status(400).json({ error: 'Invalid or expired token.' });
-    }
-    const record = rows[0];
-    if (new Date(record.expires_at) < new Date()) {
-      return res.status(400).json({ error: 'Token has expired.' });
+  db.query('SELECT user_id, expires_at FROM password_resets WHERE token = ? LIMIT 1', [token], async (err, rows) => {
+    if (err) return res.status(500).json({ error: 'Server error' });
+    if (!rows.length || new Date(rows[0].expires_at) < new Date()) {
+      return res.status(400).json({ error: 'Invalid or expired token' });
     }
 
-    const userId = record.user_id;
-    // 2) Hash the new password
     const hashed = await bcrypt.hash(newPassword, 10);
+    const userId = rows[0].user_id;
 
-    // 3) Update the user’s password in the users table
-    const updateUserQuery = 'UPDATE users SET password_hash = ? WHERE id = ?';
-    db.query(updateUserQuery, [hashed, userId], (updateErr) => {
-      if (updateErr) {
-        console.error('Error updating user password:', updateErr);
-        return res.status(500).json({ error: 'Server error' });
-      }
+    db.query('UPDATE users SET password_hash = ? WHERE id = ?', [hashed, userId], (updateErr) => {
+      if (updateErr) return res.status(500).json({ error: 'Error updating password' });
 
-      // 4) Delete the reset token (so it can’t be reused)
-      const deleteTokenQuery = 'DELETE FROM password_resets WHERE token = ?';
-      db.query(deleteTokenQuery, [token], (delErr) => {
-        if (delErr) {
-          console.error('Error deleting reset token:', delErr);
-          // Not a fatal error for the user
-        }
+      db.query('DELETE FROM password_resets WHERE token = ?', [token], () => {
+        // Even if delete fails, we still respond with success
         res.status(200).json({ message: 'Password has been reset successfully.' });
       });
     });
@@ -347,7 +209,7 @@ app.post('/api/reset-password/:token', async (req, res) => {
 
 
 // Start Server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });

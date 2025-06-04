@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import FloodData from './Components/FloodData';
 import FloodStatus from './Components/FloodStatus';
 import Login from './Components/Home/Login';
@@ -8,23 +8,25 @@ import Logout from './Components/Home/Logout';
 import PrivateRoute from './Components/Home/PrivateRoute';
 import Profile from './Components/users/Profile';
 import Register from './Components/Home/Register';
-import ResetPassword from './Components/Home/ForgotPassword';
+import ForgotPassword from './Components/Home/ForgotPassword';
 import AppLayout from './Components/AppLayout';
+import ResetPasswordModal from './Components/Home/ResetPasswordModal';
 
 function App() {
   return (
     <Router>
       <Routes>
-        {/* ✅ Default route is the HomePage (or login screen) */}
+        {/* ✅ Default route is the HomePage */}
         <Route path="/" element={<HomePage />} />
 
         {/* Public Routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/reset-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPasswordModal />} /> {/* ✅ New Modal-based Reset Route */}
         <Route path="/logout" element={<Logout />} />
 
-        {/* ✅ Protected Dashboard Routes using AppLayout */}
+        {/* ✅ Protected Routes with Layout */}
         <Route
           path="/flooddata"
           element={
@@ -46,7 +48,6 @@ function App() {
             </PrivateRoute>
           }
         />
-        
 
         <Route
           path="/profile"
