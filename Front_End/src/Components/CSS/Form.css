@@ -288,3 +288,121 @@
 .form-link-register:hover {
   color: #265eac; /* darker blue on hover */
 }
+/* Overlay dark background */
+.modal-overlay-reset-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Modal box */
+.modal-content-reset-modal {
+  background-color: #fff;
+  padding: 2rem 2.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+  max-width: 400px;
+  width: 90%;
+  position: relative;
+}
+
+/* Form container */
+.form-container-reset-modal {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Title */
+.form-title-reset-modal {
+  margin-bottom: 1.2rem;
+  font-size: 1.8rem;
+  font-weight: 600;
+  text-align: center;
+  color: #222;
+}
+
+/* Inputs */
+.form-input-reset-modal {
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  border: 1.8px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  outline-color: #3a86ff;
+  transition: border-color 0.3s ease;
+}
+.form-input-reset-modal:focus {
+  border-color: #3a86ff;
+}
+
+/* Buttons container */
+.reset-buttons-container-reset-modal {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+/* Buttons */
+.form-button-reset-modal,
+.form-button-cancel-reset-modal {
+  flex: 1;
+  padding: 0.75rem 0;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.form-button-reset-modal {
+  background-color: #3a86ff;
+  color: white;
+}
+.form-button-reset-modal:hover:not(:disabled) {
+  background-color: #265fbd;
+}
+
+.form-button-cancel-reset-modal {
+  background-color: #ccc;
+  color: #333;
+}
+.form-button-cancel-reset-modal:hover:not(:disabled) {
+  background-color: #999;
+}
+
+/* Disabled button */
+.form-button-reset-modal:disabled,
+.form-button-cancel-reset-modal:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Message styles */
+.successs-reset-modal {
+  margin-top: 1rem;
+  color: #2a9d8f;
+  font-weight: 600;
+  text-align: center;
+}
+
+.erroor-reset-modal {
+  margin-top: 1rem;
+  color: #e63946;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Loading text */
+.loading-text-reset-modal {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #555;
+}

@@ -10,7 +10,7 @@ import Profile from './Components/users/Profile';
 import Register from './Components/Home/Register';
 import ForgotPassword from './Components/Home/ForgotPassword';
 import AppLayout from './Components/AppLayout';
-import ResetPasswordPage from './Components/Home/ResetPasswordPage';
+import ResetPasswordModal from './Components/Home/ResetPasswordModal';
 
 function App() {
   return (
@@ -20,7 +20,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+       <Route path="/reset-password/:token" element={<ResetPasswordModal />} />
         <Route path="/logout" element={<Logout />} />
 
         <Route
