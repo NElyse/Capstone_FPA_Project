@@ -1,4 +1,3 @@
-// src/Components/EditUserForm.js
 import React, { useState, useEffect } from 'react';
 import '../CSS/EditUserForm.css';
 
@@ -8,7 +7,6 @@ export default function EditUserForm({ user, onCancel, onSave }) {
     email: '',
     username: '',
     phone: '',
-    role: '',
   });
 
   useEffect(() => {
@@ -18,18 +16,17 @@ export default function EditUserForm({ user, onCancel, onSave }) {
         email: user.email || '',
         username: user.username || '',
         phone: user.phone || '',
-        role: user.role || '',
       });
     }
   }, [user]);
 
-  const handleChange = e => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  const handleChange = (e) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSave(formData);
+    await onSave(formData); // no unused variable
   };
 
   return (
@@ -39,23 +36,39 @@ export default function EditUserForm({ user, onCancel, onSave }) {
         <form onSubmit={handleSubmit} className="edit-user-form">
           <label>
             Full Name:
-            <input name="full_names" value={formData.full_names} onChange={handleChange} required />
+            <input
+              name="full_names"
+              value={formData.full_names}
+              onChange={handleChange}
+              required
+            />
           </label>
           <label>
             Email:
-            <input type="email" name="email" value={formData.email} onChange={handleChange} required />
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
           </label>
           <label>
             Username:
-            <input name="username" value={formData.username} onChange={handleChange} required />
+            <input
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              required
+            />
           </label>
           <label>
             Phone:
-            <input name="phone" value={formData.phone} onChange={handleChange} />
-          </label>
-          <label>
-            Role:
-            <input name="role" value={formData.role} onChange={handleChange} disabled />
+            <input
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+            />
           </label>
           <div className="form-buttons">
             <button type="submit" className="save-button">Save</button>

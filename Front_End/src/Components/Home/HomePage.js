@@ -4,7 +4,7 @@ import Register from './Register';
 import Login from './Login';
 import ForgotPassword from './ForgotPassword';
 import '../CSS/HomePage.css';  // contains styles below
-import '../CSS/Form.css';      // your form styles
+import '../CSS/Form.css';      // your existing form styles
 
 const bgImages = [
   '/images/ikiraro-7.jpg',
@@ -63,10 +63,10 @@ export default function Home() {
           </p>
 
           <div className="action-buttons">
-            <button className="form-button" onClick={() => openModal('login')}>
+            <button className="btn btn-primary" onClick={() => openModal('login')}>
               Login
             </button>
-            <button className="form-button green" onClick={() => openModal('register')}>
+            <button className="btn btn-secondary" onClick={() => openModal('register')}>
               Register
             </button>
           </div>
@@ -83,9 +83,13 @@ export default function Home() {
       </div>
 
       <Modal isOpen={isModalOpen} closeModal={closeModal}>
-        {modalContent === 'login' && <Login switchToRegister={() => switchModalContent('register')} />}
-        {modalContent === 'register' && <Register switchToLogin={() => switchModalContent('login')} />}
-        {modalContent === 'forgot-password' && <ForgotPassword />}
+        {modalContent === 'login' && (
+          <Login switchToRegister={() => switchModalContent('register')} onCancel={closeModal} />
+        )}
+        {modalContent === 'register' && (
+          <Register switchToLogin={() => switchModalContent('login')} onCancel={closeModal} />
+        )}
+        {modalContent === 'forgot-password' && <ForgotPassword onCancel={closeModal} />}
       </Modal>
     </div>
   );

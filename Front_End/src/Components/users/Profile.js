@@ -1,4 +1,3 @@
-// src/Components/users/Profile.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import EditUserForm from './EditUserForm';
@@ -7,6 +6,7 @@ import '../CSS/EditUserForm.css';
 export default function Profile() {
   const [user, setUser] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     const userData = localStorage.getItem('user');
@@ -18,33 +18,30 @@ export default function Profile() {
   const handleEditClick = () => setIsEditing(true);
   const handleCancel = () => setIsEditing(false);
 
-const handleSave = async (updatedData) => {
-  try {
-    const token = localStorage.getItem('token'); // if you’re using auth
-    const response = await axios.put(
-      `http://localhost:5000/api/users/${user.id}`,
-      updatedData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}` // remove if you’re not using JWT auth
+  const handleSave = async (updatedData) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.put(
+        `http://localhost:5000/api/users/${user.id}`,
+        updatedData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         }
-      }
-    );
+      );
 
-    // response.data.user is the updated user returned by backend
-    const updatedUser = response.data.user;
-
-    // Update React state and localStorage so UI reflects the change
-    setUser(updatedUser);
-    localStorage.setItem('user', JSON.stringify(updatedUser));
-    setIsEditing(false);
-  } catch (err) {
-    console.error('Failed to update profile:', err);
-    alert('Profile update failed. Please try again.');
-  }
-};
-
-
+      const updatedUser = response.data.user;
+      setUser(updatedUser);
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      setIsEditing(false);
+      setSuccessMessage('Profile updated successfully!');
+      setTimeout(() => setSuccessMessage(''), 4000);
+    } catch (err) {
+      console.error('Failed to update profile:', err);
+      alert('Profile update failed. Please try again.');
+    }
+  };
 
   if (!user) {
     return <p>Loading user information...</p>;
@@ -53,6 +50,11 @@ const handleSave = async (updatedData) => {
   return (
     <div className="profile-container">
       <h2>User Profile</h2>
+
+      {successMessage && (
+        <div className="success-message">{successMessage}</div>
+      )}
+
       <table className="profile-table">
         <tbody>
           <tr>
@@ -77,6 +79,7 @@ const handleSave = async (updatedData) => {
           </tr>
         </tbody>
       </table>
+
       <button onClick={handleEditClick} className="edit-profile-btn">
         Edit Profile
       </button>

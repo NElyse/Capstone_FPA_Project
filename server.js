@@ -53,21 +53,34 @@ app.get('/api/floodstatus', (req, res) => {
   });
 });
 
-// Register User
 app.post('/api/register', async (req, res) => {
   const { fullNames, email, username, phone, password, role } = req.body;
 
   try {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const sql = 'INSERT INTO users (full_names, email, username, phone, password_hash, role) VALUES (?, ?, ?, ?, ?, ?)';
-    db.query(sql, [fullNames, email, username, phone, hashedPassword, role || 'user'], (err) => {
-      if (err) return res.status(500).json({ error: 'Registration failed' });
-      res.status(201).json({ message: 'User registered successfully' });
+    // Check uniqueness
+    const checkSql = 'SELECT * FROM users WHERE email = ? OR username = ? OR phone = ?';
+    db.query(checkSql, [email, username, phone], async (err, results) => {
+      if (err) return res.status(500).json({ error: 'Server error' });
+
+      if (results.length > 0) {
+        const conflict = results[0];
+        if (conflict.email === email) return res.status(400).json({ error: 'Email already exists.' });
+        if (conflict.username === username) return res.status(400).json({ error: 'Username already taken.' });
+        if (conflict.phone === phone) return res.status(400).json({ error: 'Phone number already registered.' });
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const insertSql = 'INSERT INTO users (full_names, email, username, phone, password_hash, role) VALUES (?, ?, ?, ?, ?, ?)';
+      db.query(insertSql, [fullNames, email, username, phone, hashedPassword, role || 'user'], (err) => {
+        if (err) return res.status(500).json({ error: 'Registration failed' });
+        res.status(201).json({ message: 'User registered successfully' });
+      });
     });
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: 'Server error' });
   }
 });
+
 
 // Login User
 app.post('/api/login', (req, res) => {
@@ -96,6 +109,42 @@ app.post('/api/login', (req, res) => {
   });
 });
 
+
+
+
+app.put('/api/users/:id', async (req, res) => {
+  const userId = req.params.id;
+  const { full_names, email, username, phone } = req.body;
+
+  const fields = [];
+  const values = [];
+
+  if (full_names) fields.push('full_names = ?'), values.push(full_names);
+  if (email) fields.push('email = ?'), values.push(email);
+  if (username) fields.push('username = ?'), values.push(username);
+  if (phone) fields.push('phone = ?'), values.push(phone);
+
+  fields.push('updated_at = NOW()');
+
+  if (!fields.length) return res.status(400).json({ error: 'No fields provided to update' });
+
+  const sql = `UPDATE users SET ${fields.join(', ')} WHERE id = ?`;
+  values.push(userId);
+
+  db.query(sql, values, (err, result) => {
+    if (err) return res.status(500).json({ error: 'Update failed' });
+    if (result.affectedRows === 0) return res.status(404).json({ error: 'User not found' });
+
+    // Fetch updated user
+    db.query('SELECT id, full_names, email, username, phone, role FROM users WHERE id = ?', [userId], (err2, rows) => {
+      if (err2 || !rows.length) return res.status(500).json({ error: 'Failed to fetch updated user' });
+      res.json({ user: rows[0] });
+    });
+  });
+});
+
+
+
 // Forgot Password
 app.post('/api/forgot-password', (req, res) => {
   const { email } = req.body;
@@ -104,10 +153,9 @@ app.post('/api/forgot-password', (req, res) => {
   db.query('SELECT id, full_names FROM users WHERE email = ? LIMIT 1', [email], (err, results) => {
     if (err) return res.status(500).json({ error: 'Database error' });
 
-    if (!results.length) {
-      // Always respond success to prevent user enumeration
-      return res.status(200).json({ message: 'If registered, a reset link has been sent.' });
-    }
+   if (!results.length) {
+  return res.status(404).json({ error: 'User not found' });
+}
 
     const user = results[0];
     const token = crypto.randomBytes(32).toString('hex');
@@ -147,7 +195,8 @@ app.post('/api/forgot-password', (req, res) => {
 
       transporter.sendMail(mailOptions, (mailErr) => {
         if (mailErr) return res.status(500).json({ error: 'Failed to send email' });
-        res.status(200).json({ message: 'Reset link sent if email is registered.' });
+        res.status(200).json({ message: 'The reset link has been sent. Check your Email.' });
+
       });
     });
   });
