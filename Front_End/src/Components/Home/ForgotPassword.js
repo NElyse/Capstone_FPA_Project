@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../CSS/Form.css';
 
 export default function ForgotPassword({ onCancel }) {
   const [email, setEmail] = useState('');
-  const [messageForgotPassword, setMessageForgotPassword] = useState('');
-  const [errorEmptyEmailForgotPassword, setErrorEmptyEmailForgotPassword] = useState('');
-  const [errorInvalidEmailForgotPassword, setErrorInvalidEmailForgotPassword] = useState('');
-  const [errorForgotPassword, setErrorForgotPassword] = useState('');
+  const [msgForgot, setMsgForgot] = useState('');
+  const [errEmpty, setErrEmpty] = useState('');
+  const [errInvalid, setErrInvalid] = useState('');
+  const [errGeneral, setErrGeneral] = useState('');
   const [loading, setLoading] = useState(false);
 
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -15,34 +15,46 @@ export default function ForgotPassword({ onCancel }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Reset all messages
-    setMessageForgotPassword('');
-    setErrorForgotPassword('');
-    setErrorEmptyEmailForgotPassword('');
-    setErrorInvalidEmailForgotPassword('');
+    // Reset messages
+    setMsgForgot('');
+    setErrGeneral('');
+    setErrEmpty('');
+    setErrInvalid('');
     setLoading(true);
 
     if (!email.trim()) {
-      setErrorEmptyEmailForgotPassword('⚠️ Please provide your email');
+      setErrEmpty('⚠️ Please provide your email');
       setLoading(false);
       return;
     }
 
     if (!isValidEmail(email)) {
-      setErrorInvalidEmailForgotPassword('❌ Please enter a valid email address');
+      setErrInvalid('❌ Please enter a valid email address');
       setLoading(false);
       return;
     }
 
     try {
       const res = await axios.post('http://localhost:5000/api/forgot-password', { email });
-      setMessageForgotPassword('✅ ' + res.data.message);
+      setMsgForgot('✅ ' + res.data.message);
     } catch (err) {
-      setErrorForgotPassword('❌ ' + (err.response?.data?.error || 'Error sending reset email'));
+      setErrGeneral('❌ ' + (err.response?.data?.error || 'Error sending reset email'));
     } finally {
       setLoading(false);
     }
   };
+
+  // Auto-hide all messages after 5 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setMsgForgot('');
+      setErrEmpty('');
+      setErrInvalid('');
+      setErrGeneral('');
+    }, 5000);
+
+    return () => clearTimeout(timer); // Clean up
+  }, [msgForgot, errEmpty, errInvalid, errGeneral]);
 
   return (
     <form onSubmit={handleSubmit} className="form-container" noValidate>
@@ -55,39 +67,31 @@ export default function ForgotPassword({ onCancel }) {
         placeholder="Enter your email"
       />
 
-      {/* Show error messages separately */}
-      {errorEmptyEmailForgotPassword && (
-        <div className="erroor-forgot-password">{errorEmptyEmailForgotPassword}</div>
-      )}
-      {errorInvalidEmailForgotPassword && (
-        <div className="erroor-forgot-password">{errorInvalidEmailForgotPassword}</div>
-      )}
-      {errorForgotPassword && (
-        <div className="erroor-forgot-password">{errorForgotPassword}</div>
-      )}
+      {errEmpty && <div className="erroor-forgot-password fade-message">{errEmpty}</div>}
+      {errInvalid && <div className="erroor-forgot-password fade-message">{errInvalid}</div>}
+      {errGeneral && <div className="erroor-forgot-password fade-message">{errGeneral}</div>}
 
-      <button
-        type="submit"
-        className="form-button small-button"
-        disabled={loading}
-      >
-        {loading ? 'Sending...' : 'Reset Password'}
-      </button>
-
-      {onCancel && (
+      <div className="rest-buttons-container">
         <button
-          type="button"
-          className="form-button cancel-button"
-          onClick={onCancel}
+          type="submit"
+          className="rest-button-forgot"
+          disabled={loading}
         >
-          Cancel
+          {loading ? 'Sending...' : 'Reset Password'}
         </button>
-      )}
 
-      {/* Show success message below buttons */}
-      {messageForgotPassword && (
-        <div className="successs-forgot-password">{messageForgotPassword}</div>
-      )}
+        {onCancel && (
+          <button
+            type="button"
+            className="cancel-button-forgot"
+            onClick={onCancel}
+          >
+            Cancel
+          </button>
+        )}
+      </div>
+
+      {msgForgot && <div className="successs-forgot-password fade-message">{msgForgot}</div>}
     </form>
   );
 }

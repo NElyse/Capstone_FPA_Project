@@ -88,25 +88,23 @@ export default function Login({ switchToRegister, onCancel }) {
           </div>
         )}
 
-        <div className="button-row">
-          <button type="submit" className="form-button small-button">Login</button>
+        <div className="login-buttons-container">
+          <button type="submit" className="login-button">Login</button>
           {onCancel && (
-            <button
-              type="button"
-              className="form-button cancel-button"
-              onClick={onCancel}
-            >
+            <button type="button" className="cancel-button-login" onClick={onCancel}>
               Cancel
             </button>
           )}
         </div>
 
-        <div className="form-switch-text">
-          Don't have an account?{' '}
-          <button type="button" className="form-link" onClick={switchToRegister}>
-            Register here
-          </button>
-        </div>
+
+        <div className="form-switch-text-register">
+  Don't have an account?{' '}
+  <button type="button" className="form-link-register" onClick={switchToRegister}>
+    Register here
+  </button>
+</div>
+
       </form>
     </div>
   );
