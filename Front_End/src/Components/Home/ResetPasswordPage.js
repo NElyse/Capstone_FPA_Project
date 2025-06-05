@@ -1,6 +1,5 @@
-// src/components/ResetPasswordPage.js
 import React, { useState, useEffect } from 'react';
-import '../CSS/Form.css'; // Make sure your CSS matches these classes!
+import '../CSS/Form.css';
 
 export default function ResetPasswordPage({ token, isOpen, onClose }) {
   const [newPassword, setNewPassword] = useState('');
@@ -30,10 +29,25 @@ export default function ResetPasswordPage({ token, isOpen, onClose }) {
       .finally(() => setLoading(false));
   }, [token, isOpen]);
 
+  useEffect(() => {
+    if (message || error) {
+      const timer = setTimeout(() => {
+        setMessage('');
+        setError('');
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [message, error]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage('');
     setError('');
+
+    if (!newPassword.trim() || !confirmPassword.trim()) {
+      setError('Both password fields are required.');
+      return;
+    }
 
     if (newPassword !== confirmPassword) {
       setError('Passwords do not match.');
@@ -51,14 +65,17 @@ export default function ResetPasswordPage({ token, isOpen, onClose }) {
       const data = await res.json();
       if (res.ok) {
         setMessage(data.message || 'Password reset successful. Redirecting to login...');
+        setError('');
         setTimeout(() => {
-          onClose(); // close modal and navigate
+          onClose();
         }, 2500);
       } else {
         setError(data.error || 'Password reset failed.');
+        setMessage('');
       }
     } catch {
       setError('Network error. Try again later.');
+      setMessage('');
     }
     setSubmitting(false);
   };
@@ -67,23 +84,23 @@ export default function ResetPasswordPage({ token, isOpen, onClose }) {
 
   return (
     <div
-      className="modal-overlay-reset-modal"
+      className="modal-overlay-reset-password"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
       aria-labelledby="reset-password-title"
     >
       <div
-        className="modal-content-reset-modal"
+        className="modal-content-reset-password"
         onClick={e => e.stopPropagation()}
       >
         {loading ? (
-          <p className="loading-text-reset-modal">Validating token...</p>
+          <p className="loading-text-reset-password">Validating token...</p>
         ) : !validToken ? (
           <>
-            <p className="erroor-reset-modal">{error || 'Invalid or expired token.'}</p>
+            <p className="erroor-reset-password">{error || 'Invalid or expired token.'}</p>
             <button
-              className="form-button-cancel-reset-modal"
+              className="cancel-button-reset-password"
               onClick={onClose}
               disabled={submitting}
             >
@@ -91,8 +108,8 @@ export default function ResetPasswordPage({ token, isOpen, onClose }) {
             </button>
           </>
         ) : (
-          <form onSubmit={handleSubmit} className="form-container-reset-modal">
-            <h2 id="reset-password-title" className="form-title-reset-modal">
+          <form onSubmit={handleSubmit} className="form-container-reset-password" noValidate>
+            <h2 id="reset-password-title" className="form-title-reset-password">
               Set New Password
             </h2>
 
@@ -101,10 +118,10 @@ export default function ResetPasswordPage({ token, isOpen, onClose }) {
               placeholder="New Password"
               value={newPassword}
               onChange={e => setNewPassword(e.target.value)}
-              className="form-input-reset-modal"
-              required
+              className="form-input-reset-password"
               autoFocus
               disabled={submitting}
+              aria-required="true"
             />
 
             <input
@@ -112,22 +129,18 @@ export default function ResetPasswordPage({ token, isOpen, onClose }) {
               placeholder="Confirm New Password"
               value={confirmPassword}
               onChange={e => setConfirmPassword(e.target.value)}
-              className="form-input-reset-modal"
-              required
+              className="form-input-reset-password"
               disabled={submitting}
+              aria-required="true"
             />
 
-            <div className="reset-buttons-container-reset-modal">
-              <button
-                type="submit"
-                className="form-button-reset-modal"
-                disabled={submitting}
-              >
+            <div className="reset-password-buttons-container">
+              <button type="submit" className="reset-password-button" disabled={submitting}>
                 {submitting ? 'Resetting...' : 'Reset Password'}
               </button>
               <button
                 type="button"
-                className="form-button-cancel-reset-modal"
+                className="cancel-button-reset-password"
                 onClick={onClose}
                 disabled={submitting}
               >
@@ -135,8 +148,8 @@ export default function ResetPasswordPage({ token, isOpen, onClose }) {
               </button>
             </div>
 
-            {message && <p className="successs-reset-modal">{message}</p>}
-            {error && <p className="erroor-reset-modal">{error}</p>}
+            {message && <p className="successs-reset-password">{message}</p>}
+            {error && <p className="erroor-reset-password">{error}</p>}
           </form>
         )}
       </div>

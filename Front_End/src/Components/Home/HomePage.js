@@ -3,8 +3,8 @@ import Modal from './Modal';
 import Register from './Register';
 import Login from './Login';
 import ForgotPassword from './ForgotPassword';
-import '../CSS/HomePage.css';  // contains styles below
-import '../CSS/Form.css';      // your existing form styles
+import '../CSS/HomePage.css';
+import '../CSS/Form.css';
 
 const bgImages = [
   '/images/ikiraro-7.jpg',
@@ -62,22 +62,27 @@ export default function Home() {
             Stay informed and prepared with real-time flood data, alerts, and community reports.
           </p>
 
-          <div className="action-buttons">
-            <button className="btn btn-primary" onClick={() => openModal('login')}>
-              Login
-            </button>
-            <button className="btn btn-secondary" onClick={() => openModal('register')}>
-              Register
-            </button>
-          </div>
-
-          <div className="forgot-link">
-            <p>
-              Forgot password?{' '}
-              <button className="form-link" onClick={() => openModal('forgot-password')}>
-                Reset it here
+          <div className="home-actions">
+            <div className="auth-buttons">
+              <button className="btn-auth login-btn" onClick={() => openModal('login')}>
+                Login
               </button>
-            </p>
+              <button className="btn-auth register-btn" onClick={() => openModal('register')}>
+                Register
+              </button>
+            </div>
+
+            <div className="forgot-password-link">
+              <p>
+                Forgot password?{' '}
+                <button
+                  className="link-reset-password"
+                  onClick={() => openModal('forgot-password')}
+                >
+                  Reset it here
+                </button>
+              </p>
+            </div>
           </div>
         </div>
       </div>

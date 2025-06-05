@@ -243,12 +243,12 @@ app.post('/api/reset-password/:token', async (req, res) => {
   });
 });
 
-// Serve React static files from build
-app.use(express.static(path.join(__dirname, 'build')));
+// Serve static files from React build folder
+app.use(express.static(path.join(__dirname, '../Front_End/build')));
 
-// React Router will handle all front-end routes (like /reset-password/:token)
+// Catch-all route to serve index.html for React Router
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+  res.sendFile(path.join(__dirname, '../Front_End/build', 'index.html'));
 });
 
 // Start Server

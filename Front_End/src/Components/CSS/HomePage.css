@@ -87,28 +87,90 @@
   line-height: 1.4;
 }
 
-/* Buttons container */
-.action-buttons {
+/* Buttons container with equal-sized buttons */
+.home-actions {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
   gap: 1rem;
-  margin-bottom: 1rem;
 }
 
-/* Forgot password link */
-.forgot-link {
+/* Wrapper for Login & Register buttons */
+.auth-buttons {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  max-width: 320px;
+  justify-content: center;
+}
+
+/* Buttons styling */
+.btn-auth {
+  flex: 1;
+  padding: 12px 0;
+  font-weight: 700;
+  border-radius: 0.75rem;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  user-select: none;
+  transition: background-color 0.3s ease;
+  color: white;
+  /* No background here, use specific classes */
+}
+
+/* Login button - purple shade matching glass */
+.login-btn {
+  background-color: #6c44e0;
+}
+
+.login-btn:hover,
+.login-btn:focus {
+  background-color: #502bb8;
+  outline: none;
+}
+
+/* Register button - lighter purple */
+.register-btn {
+  background-color: #8b66f7;
+}
+
+.register-btn:hover,
+.register-btn:focus {
+  background-color: #6e47cc;
+  outline: none;
+}
+
+/* Forgot password link container */
+.forgot-password-link {
   font-size: 0.9rem;
   font-style: italic;
-  color: #ffffff;
+  color: #e0e0ff;
+  user-select: none;
 }
 
-/* Link button */
-.form-link {
+/* Reset password link button */
+.link-reset-password {
   background: none;
   border: none;
-  color: #829ae9;
+  color: #a0a6ff;
+  font-weight: 600;
   text-decoration: underline;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 0.9rem;
   padding: 0;
+  user-select: none;
+}
+
+.link-reset-password:hover,
+.link-reset-password:focus {
+  color: #7a7fff;
+  outline: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .auth-buttons {
+    flex-direction: column;
+  }
 }

@@ -288,121 +288,264 @@
 .form-link-register:hover {
   color: #265eac; /* darker blue on hover */
 }
-/* Overlay dark background */
-.modal-overlay-reset-modal {
+/* Reset Password Modal Styling */
+.modal-overlay-reset-password {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background: rgba(0,0,0,0.6);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
 }
 
-/* Modal box */
-.modal-content-reset-modal {
-  background-color: #fff;
-  padding: 2rem 2.5rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.25);
-  max-width: 400px;
+.modal-content-reset-password {
+  background: #fff;
+  padding: 30px;
   width: 90%;
+  max-width: 400px;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
   position: relative;
 }
 
-/* Form container */
-.form-container-reset-modal {
+.form-container-reset-password {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.form-title-reset-password {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.form-input-reset-password {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.reset-buttons-container-reset-password {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.form-button-reset-password,
+.form-button-cancel-reset-password {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+
+.form-button-reset-password {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.form-button-reset-password:hover {
+  background-color: #0056b3;
+}
+
+.form-button-cancel-reset-password {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.form-button-cancel-reset-password:hover {
+  background-color: #b52a37;
+}
+
+.successs-reset-password {
+  color: #28a745;
+  background-color: #e6ffed;
+  border: 1px solid #28a745;
+  padding: 8px;
+  border-radius: 6px;
+  margin-top: 10px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.erroor-reset-password {
+  color: #dc3545;
+  background-color: #ffe6e9;
+  border: 1px solid #dc3545;
+  padding: 8px;
+  border-radius: 6px;
+  margin-top: 10px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.loading-text-reset-password {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* Reset Password Modal Container */
+.modal-overlay-reset-password {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content-reset-password {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 450px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.form-title-reset-password {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.form-container-reset-password {
   display: flex;
   flex-direction: column;
 }
 
-/* Title */
-.form-title-reset-modal {
-  margin-bottom: 1.2rem;
-  font-size: 1.8rem;
-  font-weight: 600;
-  text-align: center;
-  color: #222;
+.form-input-reset-password {
+  padding: 10px;
+  margin-bottom: 12px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
-/* Inputs */
-.form-input-reset-modal {
-  padding: 0.75rem 1rem;
-  margin-bottom: 1rem;
-  border: 1.8px solid #ccc;
-  border-radius: 6px;
-  font-size: 1rem;
-  outline-color: #3a86ff;
-  transition: border-color 0.3s ease;
-}
-.form-input-reset-modal:focus {
-  border-color: #3a86ff;
-}
-
-/* Buttons container */
-.reset-buttons-container-reset-modal {
+/* Button styles like login */
+.reset-password-buttons-container {
   display: flex;
   justify-content: space-between;
-  gap: 1rem;
-  margin-top: 0.5rem;
+  gap: 12px;
+  margin-top: 16px;
 }
 
-/* Buttons */
-.form-button-reset-modal,
-.form-button-cancel-reset-modal {
+.reset-password-buttons-container button {
   flex: 1;
-  padding: 0.75rem 0;
-  border: none;
-  border-radius: 6px;
+  padding: 10px 0;
   font-weight: 600;
+  border-radius: 5px;
+  border: none;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
-.form-button-reset-modal {
-  background-color: #3a86ff;
+.reset-password-button {
+  background-color: #4caf50;
   color: white;
 }
-.form-button-reset-modal:hover:not(:disabled) {
-  background-color: #265fbd;
+
+.reset-password-button:hover {
+  background-color: #388e3c;
 }
 
-.form-button-cancel-reset-modal {
-  background-color: #ccc;
-  color: #333;
-}
-.form-button-cancel-reset-modal:hover:not(:disabled) {
-  background-color: #999;
+.cancel-button-reset-password {
+  background-color: #e0e0e0;
+  color: #424242;
 }
 
-/* Disabled button */
-.form-button-reset-modal:disabled,
-.form-button-cancel-reset-modal:disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
+.cancel-button-reset-password:hover {
+  background-color: #bdbdbd;
 }
 
-/* Message styles */
-.successs-reset-modal {
-  margin-top: 1rem;
-  color: #2a9d8f;
-  font-weight: 600;
+/* Feedback messages */
+.successs-reset-password {
+  color: #2e7d32;
+  background-color: #c8e6c9;
+  border: 1px solid #81c784;
+  padding: 10px;
+  border-radius: 4px;
+  margin-top: 16px;
   text-align: center;
 }
 
-.erroor-reset-modal {
-  margin-top: 1rem;
-  color: #e63946;
-  font-weight: 600;
+.erroor-reset-password {
+  color: #c62828;
+  background-color: #ffcdd2;
+  border: 1px solid #ef9a9a;
+  padding: 10px;
+  border-radius: 4px;
+  margin-top: 16px;
   text-align: center;
 }
 
-/* Loading text */
-.loading-text-reset-modal {
+.loading-text-reset-password {
   text-align: center;
+  font-weight: 500;
+}
+
+
+/* Base button style */
+.btn-auth {
+  flex: 1;
+  padding: 14px 0;
+  font-weight: 700;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
   font-size: 1.1rem;
-  color: #555;
+  user-select: none;
+  transition: 
+    background-color 0.3s ease, 
+    box-shadow 0.3s ease, 
+    transform 0.2s ease;
+  color: white;
+  box-shadow: 0 4px 8px rgba(100, 60, 220, 0.25);
+  background-image: linear-gradient(135deg, #7b56e2 0%, #5a3edb 100%);
+}
+
+/* Login button specific style */
+.login-btn {
+  background-image: linear-gradient(135deg, #6c44e0 0%, #502bb8 100%);
+  box-shadow: 0 6px 12px rgba(81, 43, 184, 0.45);
+}
+
+.login-btn:hover,
+.login-btn:focus {
+  background-image: linear-gradient(135deg, #5a3edb 0%, #3f2596 100%);
+  box-shadow: 0 8px 20px rgba(63, 37, 150, 0.7);
+  transform: translateY(-3px);
+  outline: none;
+}
+
+/* Register button specific style */
+.register-btn {
+  background-image: linear-gradient(135deg, #8b66f7 0%, #6e47cc 100%);
+  box-shadow: 0 6px 12px rgba(110, 71, 204, 0.45);
+}
+
+.register-btn:hover,
+.register-btn:focus {
+  background-image: linear-gradient(135deg, #7a54e0 0%, #5a3bd2 100%);
+  box-shadow: 0 8px 20px rgba(90, 59, 210, 0.7);
+  transform: translateY(-3px);
+  outline: none;
+}
+
+/* Add subtle active press effect */
+.btn-auth:active {
+  transform: translateY(1px);
+  box-shadow: 0 3px 6px rgba(60, 40, 160, 0.4);
 }
