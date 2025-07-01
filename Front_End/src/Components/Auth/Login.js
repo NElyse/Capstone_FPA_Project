@@ -6,16 +6,16 @@ import '../CSS/Form.css';
 export default function Login({ switchToRegister, onCancel }) {
   const [formData, setFormData] = useState({ identifier: '', password: '' });
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [serverError, setServerError] = useState(''); // separate server error state
   const navigate = useNavigate();
 
-  const refs = {
-    identifier: useRef(null),
-    password: useRef(null),
-  };
+  const refs = { identifier: useRef(null), password: useRef(null) };
 
   const handleChange = (e) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
-    setErrors(prev => ({ ...prev, [e.target.name]: '' })); // Clear error on typing
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setErrors((prev) => ({ ...prev, [e.target.name]: '' }));
+    setServerError(''); // Clear server error on typing
   };
 
   const handleLogin = async (e) => {
@@ -33,12 +33,16 @@ export default function Login({ switchToRegister, onCancel }) {
     }
 
     try {
-      const res = await axios.post('http://localhost:5000/api/userLoginRoutes/userLogin', formData);
+      setLoading(true);
+      setServerError('');
+      const res = await axios.post('http://localhost:5000/api/userLoginRoutes/login', formData);
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('user', JSON.stringify(res.data.user));
       navigate('/flooddata');
     } catch (err) {
-      setErrors({ server: '❌ ' + (err.response?.data?.error || 'Login failed') });
+      setServerError('❌ Login failed');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -57,12 +61,9 @@ export default function Login({ switchToRegister, onCancel }) {
           aria-describedby="error-identifier"
           aria-invalid={!!errors.identifier}
           autoComplete="username"
+          disabled={loading}
         />
-        {errors.identifier && (
-          <div id="error-identifier" className="erroor" aria-live="polite">
-            {errors.identifier}
-          </div>
-        )}
+        {errors.identifier && <div id="error-identifier" className="erroor" aria-live="polite">{errors.identifier}</div>}
 
         <input
           name="password"
@@ -75,36 +76,29 @@ export default function Login({ switchToRegister, onCancel }) {
           aria-describedby="error-password"
           aria-invalid={!!errors.password}
           autoComplete="current-password"
+          disabled={loading}
         />
-        {errors.password && (
-          <div id="error-password" className="erroor" aria-live="polite">
-            {errors.password}
-          </div>
-        )}
+        {errors.password && <div id="error-password" className="erroor" aria-live="polite">{errors.password}</div>}
 
-        {errors.server && (
-          <div className="erroor" aria-live="polite">
-            {errors.server}
-          </div>
-        )}
+        {serverError && <div className="erroor" aria-live="polite">{serverError}</div>}
 
         <div className="login-buttons-container">
-          <button type="submit" className="login-button">Login</button>
+          <button type="submit" className="login-button" disabled={loading || !!serverError}>
+            {loading ? 'Logging in...' : 'Login'}
+          </button>
           {onCancel && (
-            <button type="button" className="cancel-button-login" onClick={onCancel}>
+            <button type="button" className="cancel-button-login" onClick={onCancel} disabled={loading}>
               Cancel
             </button>
           )}
         </div>
 
-
         <div className="form-switch-text-register">
-  Don't have an account?{' '}
-  <button type="button" className="form-link-register" onClick={switchToRegister}>
-    Register here
-  </button>
-</div>
-
+          Don't have an account?{' '}
+          <button type="button" className="form-link-register" onClick={switchToRegister} disabled={loading}>
+            Register here
+          </button>
+        </div>
       </form>
     </div>
   );

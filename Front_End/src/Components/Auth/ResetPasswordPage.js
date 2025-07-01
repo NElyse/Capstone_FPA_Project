@@ -14,7 +14,7 @@ export default function ResetPasswordPage({ token, isOpen, onClose }) {
     if (!token || !isOpen) return;
 
     setLoading(true);
-    fetch(`http://localhost:5000/api/reset-password/${token}`)
+    fetch(`http://localhost:5000/api/userLoginRoutes/reset-password/${token}`)
       .then(res => res.json())
       .then(data => {
         if (data.error) {
@@ -56,7 +56,7 @@ export default function ResetPasswordPage({ token, isOpen, onClose }) {
 
     setSubmitting(true);
     try {
-      const res = await fetch(`http://localhost:5000/api/reset-password/${token}`, {
+      const res = await fetch(`http://localhost:5000/api/userLoginRoutes/reset-password/${token}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ newPassword }),

@@ -1,15 +1,15 @@
-// src/components/FloodData.jsx
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import DataCard from './DataCard'; // Import DataCard component
+import DataCard from './DataCard';
 import './CSS/FloodData.css';
 
 const FloodData = () => {
   const [floodData, setFloodData] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/flooddata')
+    axios.get('http://localhost:5000/api/floodDataRoutes/selectFloodData')
       .then(response => {
+        console.log('Flood data response:', response.data);
         setFloodData(response.data);
       })
       .catch(err => {
@@ -30,28 +30,30 @@ const FloodData = () => {
     }
   };
 
+  const dataArray = Array.isArray(floodData) ? floodData : [];
+
   return (
     <div className="flood-data-container p-6">
-            <div className="cards-container grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {floodData.map((data) => (
+      <div className="cards-container grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {dataArray.map((data) => (
           <React.Fragment key={data.id}>
             <DataCard
               title="Water Level"
               value={data.water_level}
               unit="m"
-              color="bg-blue-500" // Adjust the color as needed
+              color="bg-blue-500"
             />
             <DataCard
               title="Rainfall"
               value={data.rainfall}
               unit="mm"
-              color="bg-green-500" // Adjust the color as needed
+              color="bg-green-500"
             />
             <DataCard
               title="Flood Risk"
               value={data.flood_risk}
               unit=""
-              color={getColorForFloodRisk(data.flood_risk)} // Dynamic color based on flood risk
+              color={getColorForFloodRisk(data.flood_risk)}
             />
           </React.Fragment>
         ))}

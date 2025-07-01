@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../CSS/Register.css';
 
-
 export default function Register({ onCancel, switchToLogin }) {
   const [form, setForm] = useState({
     fullNames: '',
@@ -40,24 +39,40 @@ export default function Register({ onCancel, switchToLogin }) {
     if (!form.username.trim()) newErrors.username = '⚠️ Please! Choose a username.';
     if (!form.phone.trim()) newErrors.phone = '⚠️ Please provide your phone number.';
     else if (!/^(078|079|072|073)\d{7}$/.test(form.phone))
-      newErrors.phone = '❌ Please! Enter a valid Phone number starting with 078, 079, 072, or 073 and exactly 10 digits.';
+      newErrors.phone = '❌ Valid phone must start with 078, 079, 072, or 073 and be 10 digits.';
     if (!form.password) newErrors.password = '⚠️ Please! create a password.';
     return newErrors;
   };
 
   const handleSubmit = async e => {
     e.preventDefault();
+    console.log('[DEBUG] Submit started with form:', form);
     const validationErrors = validate();
+
     if (Object.keys(validationErrors).length > 0) {
+      console.log('[DEBUG] Validation failed:', validationErrors);
       setErrorsRegister(validationErrors);
       return;
     }
 
     try {
-      const res = await axios.post('http://localhost:5000/api/userLoginRoutes/register', form);
-      setSuccesssRegister('✅ ' + res.data.message);
+      const response = await axios.post('http://localhost:5000/api/userLoginRoutes/register', form, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      console.log('[DEBUG] Server response:', response.data);
+      setSuccesssRegister('✅ ' + response.data.message);
+      setForm({
+        fullNames: '',
+        email: '',
+        username: '',
+        phone: '',
+        password: '',
+        role: 'user'
+      });
     } catch (err) {
       const msg = err.response?.data?.error || 'Registration failed. Try again.';
+      console.error('[DEBUG] Registration error:', msg);
+
       if (msg.includes('email')) setErrorsRegister({ email: msg });
       else if (msg.includes('username')) setErrorsRegister({ username: msg });
       else if (msg.includes('phone')) setErrorsRegister({ phone: msg });
@@ -104,7 +119,7 @@ export default function Register({ onCancel, switchToLogin }) {
       {successsRegister && <div className="successs-register">{successsRegister}</div>}
 
       <div className="form-switch-text-register">
-        Arleady have an account?{' '}
+        Already have an account?{' '}
         <button type="button" className="form-link-register" onClick={switchToLogin}>Click to Login</button>
       </div>
     </form>

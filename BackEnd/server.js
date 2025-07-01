@@ -1,33 +1,27 @@
+require('dotenv').config();
 const express = require('express');
-const cors = require('cors');
-const dotenv = require('dotenv');
 const path = require('path');
+const cors = require('cors');
 
-dotenv.config();
-
-const db = require('./config/db');
-
-const UserLoginRoutes = require('./Routes/userLoginRoutes');
-// const floodRoutes = require('./routes/floodRoutes');
-// const userRoutes = require('./routes/userRoutes');
+const userLoginRoutes = require('./Routes/userLoginRoutes');
+const floodDataRoutes = require('./Routes/floodDataRoutes');
 
 const app = express();
-const PORT = process.env.PORT || 4000;
 
 app.use(cors());
 app.use(express.json());
 
-// Route Mounting
-app.use('/api/userLoginRoutes', UserLoginRoutes);
-// app.use('/api/flood', floodRoutes);
-// app.use('/api/users', userRoutes);
+// Routes
+app.use('/api/userLoginRoutes', userLoginRoutes);
+app.use('/api/flood', floodDataRoutes);
 
-// Serve React build (optional)
+// Serve React build
 app.use(express.static(path.join(__dirname, '../Front_End/build')));
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../Front_End/build', 'index.html'));
 });
 
+const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });

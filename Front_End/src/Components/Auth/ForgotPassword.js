@@ -35,7 +35,7 @@ export default function ForgotPassword({ onCancel }) {
     }
 
     try {
-      const res = await axios.post('http://localhost:5000/api/forgot-password', { email });
+      const res = await axios.post('http://localhost:5000/api/userLoginRoutes/forgot-password', { email });
       setMsgForgot('✅ ' + res.data.message);
     } catch (err) {
       setErrGeneral('❌ ' + (err.response?.data?.error || 'Error sending reset email'));
