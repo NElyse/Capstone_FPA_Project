@@ -47,17 +47,17 @@ export default function ForgotPassword({ onCancel }) {
   // Auto-hide all messages after 5 seconds
   useEffect(() => {
     const timer = setTimeout(() => {
-      setMsgForgot('');
       setErrEmpty('');
       setErrInvalid('');
       setErrGeneral('');
     }, 5000);
 
     return () => clearTimeout(timer); // Clean up
-  }, [msgForgot, errEmpty, errInvalid, errGeneral]);
+  }, [errEmpty, errInvalid, errGeneral]);
 
   return (
     <form onSubmit={handleSubmit} className="form-container" noValidate>
+      {msgForgot && <div className="successs-forgot-password ">{msgForgot}</div>}
       <label className="form-label">Email</label>
       <input
         type="email"
@@ -86,12 +86,12 @@ export default function ForgotPassword({ onCancel }) {
             className="cancel-button-forgot"
             onClick={onCancel}
           >
-            Cancel
+            Back to Login
           </button>
         )}
       </div>
 
-      {msgForgot && <div className="successs-forgot-password fade-message">{msgForgot}</div>}
+      
     </form>
   );
 }

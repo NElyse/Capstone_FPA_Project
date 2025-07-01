@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
-import Register from './Register';
-import Login from './Login';
-import ForgotPassword from './ForgotPassword';
+import Register from '../Auth/Register';
+import Login from '../Auth/Login';
+import ForgotPassword from '../Auth/ForgotPassword';
 import '../CSS/HomePage.css';
 import '../CSS/Form.css';
 
